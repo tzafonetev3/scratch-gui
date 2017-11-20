@@ -1,6 +1,7 @@
 import musicImage from './music.png';
 import penImage from './pen.png';
 import wedoImage from './wedo.png';
+import scratchbitImage from './scratchbit.png';
 
 export default [
     {
@@ -22,6 +23,13 @@ export default [
         extensionURL: 'wedo2',
         iconURL: wedoImage,
         description: 'Build with motors and sensors.',
+        featured: true
+    },
+    {
+        name: 'ScratchBit',
+        extensionURL: 'scratchbit',
+        iconURL: scratchbitImage,
+        description: 'Build with ScratchBit.',
         featured: true
     }
 ];
