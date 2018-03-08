@@ -26,15 +26,15 @@ var _analytics = __webpack_require__(10);
 
 var _analytics2 = _interopRequireDefault(_analytics);
 
-var _appStateHoc = __webpack_require__(24);
+var _appStateHoc = __webpack_require__(26);
 
 var _appStateHoc2 = _interopRequireDefault(_appStateHoc);
 
-var _gui = __webpack_require__(27);
+var _gui = __webpack_require__(29);
 
 var _gui2 = _interopRequireDefault(_gui);
 
-var _projectLoaderHoc = __webpack_require__(34);
+var _projectLoaderHoc = __webpack_require__(35);
 
 var _projectLoaderHoc2 = _interopRequireDefault(_projectLoaderHoc);
 
@@ -44,8 +44,7 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//if (process.env.NODE_ENV === 'production' && typeof window === 'object') {
-if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object') {
+if (false) {
     // Warn before navigating away
     window.onbeforeunload = function () {
         return true;
