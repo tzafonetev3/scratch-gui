@@ -4,6 +4,7 @@ import penImage from './pen.png';
 import speechImage from './speech.png';
 import videoImage from './video-sensing.png';
 import wedoImage from './wedo.png';
+import scratchbitImage from './scratchbit.png';
 
 export default [
     {
@@ -18,6 +19,13 @@ export default [
         extensionURL: 'pen',
         iconURL: penImage,
         description: 'Draw with your sprites.',
+        featured: true
+    },
+    {
+        name: 'ScratchBit',
+        extensionURL: 'scratchbit',
+        iconURL: scratchbitImage,
+        description: 'Build with ScratchBit.',
         featured: true
     },
     {
