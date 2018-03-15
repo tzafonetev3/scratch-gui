@@ -40,18 +40,12 @@ class SaveButton extends React.Component {
             ...props
         } = this.props;
         return (
-            <ComingSoonTooltip
-                place="bottom"
-                tooltipId="save-button"
+            <ButtonComponent
+                onClick={this.handleClick}
+                {...props}
             >
-                <ButtonComponent
-                    disabled
-                    onClick={this.handleClick}
-                    {...props}
-                >
-                    Save
-                </ButtonComponent>
-            </ComingSoonTooltip>
+                Save
+            </ButtonComponent>
         );
     }
 }

@@ -68,13 +68,18 @@
     user-select: none;
 }
 
-.feedback-button-wrapper {
+.button-wrapper {
     align-self: center;
     padding: 0 .5rem;
     line-height: $menu-bar-height;
 }
 
-.feedback-button {
+.indicator-icon {
+    vertical-align: middle;
+    padding: 0 0.3rem;
+}
+
+.button {
     border-radius: 5px;
     padding: .75rem;
     background-color: #FFF;
@@ -84,11 +89,11 @@
     color: $motion-primary;
 }
 
-.feedback-button-icon {
+.button-icon {
     vertical-align: middle;
 }
 
-.feedback-button-icon {
+.button-icon {
     margin-right: .5rem;
     width: 1.5rem;
     height: 1.5rem;
