@@ -6,100 +6,318 @@ import React from 'react';
 
 import Box from '../box/box.jsx';
 import Button from '../button/button.jsx';
-import LoadButton from '../../containers/load-button.jsx';
-import SaveButton from '../../containers/save-button.jsx';
-import DeviceManagerButton from '../../containers/device-manager-button.jsx';
+import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
+import Divider from '../divider/divider.jsx';
 import LanguageSelector from '../../containers/language-selector.jsx';
+import ProjectLoader from '../../containers/project-loader.jsx';
+import Menu from '../../containers/menu.jsx';
+import {MenuItem, MenuSection} from '../menu/menu.jsx';
+import ProjectSaver from '../../containers/project-saver.jsx';
 
+import {openTipsLibrary} from '../../reducers/modals';
 import {
-  openFeedbackForm
-} from '../../reducers/modals';
+    openFileMenu,
+    closeFileMenu,
+    fileMenuOpen,
+    openEditMenu,
+    closeEditMenu,
+    editMenuOpen
+} from '../../reducers/menus';
 
 import styles from './menu-bar.css';
 
-import feedbackIcon from './icon--feedback.svg';
-import deviceManagerIcon from './icon--device_manager.svg';
+import mystuffIcon from './icon--mystuff.png';
+import profileIcon from './icon--profile.png';
+import communityIcon from './icon--see-community.svg';
+import dropdownCaret from '../language-selector/dropdown-caret.svg';
 import scratchLogo from './scratch-logo.svg';
+import bluetoothIcon from './icon--bluetooth.svg';
 
 import greenIndicatorIcon from './icon--indicator_green.svg';
 import orangeIndicatorIcon from './icon--indicator_orange.svg';
 import redIndicatorIcon from './icon--indicator_red.svg';
 
+import helpIcon from './icon--help.svg';
+
 let textChar = null;
 let matrixChar = null;
 
-const MenuBar = props => (
-    <Box
-        className={classNames({
-            [styles.menuBar]: true
-        })}
+const MenuBarItemTooltip = ({
+    children,
+    className,
+    id,
+    place = 'bottom'
+}) => (
+    <ComingSoonTooltip
+        className={classNames(styles.comingSoon, className)}
+        place={place}
+        tooltipClassName={styles.comingSoonTooltip}
+        tooltipId={id}
     >
+        {children}
+    </ComingSoonTooltip>
+);
+
+MenuBarItemTooltip.propTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    id: PropTypes.string,
+    place: PropTypes.oneOf(['top', 'bottom', 'left', 'right'])
+};
+
+const MenuItemTooltip = ({id, children, className}) => (
+    <ComingSoonTooltip
+        className={classNames(styles.comingSoon, className)}
+        place="right"
+        tooltipClassName={styles.comingSoonTooltip}
+        tooltipId={id}
+    >
+        {children}
+    </ComingSoonTooltip>
+);
+
+MenuItemTooltip.propTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    id: PropTypes.string
+};
+
+const MenuBarMenu = ({
+    children,
+    onRequestClose,
+    open,
+    place = 'right'
+}) => (
+    <Menu
+        className={styles.menu}
+        open={open}
+        place={place}
+        onRequestClose={onRequestClose}
+    >
+        {children}
+    </Menu>
+);
+
+MenuBarMenu.propTypes = {
+    children: PropTypes.node,
+    onRequestClose: PropTypes.func,
+    open: PropTypes.bool,
+    place: PropTypes.oneOf(['left', 'right'])
+};
+
+const MenuBar = props => (
+    <Box className={styles.menuBar}>
         <div className={styles.mainMenu}>
-            <div className={classNames(styles.logoWrapper, styles.menuItem)}>
-                <img
-                    alt="Scratch"
-                    className={styles.scratchLogo}
-                    src={scratchLogo}
-                />
+            <div className={styles.fileGroup}>
+                <div className={classNames(styles.menuBarItem)}>
+                    <img
+                        alt="Scratch"
+                        className={styles.scratchLogo}
+                        draggable={false}
+                        src={scratchLogo}
+                    />
+                </div>
+                <div className={classNames(styles.menuBarItem, styles.hoverable)}>
+                    <MenuBarItemTooltip
+                        id="menubar-selector"
+                        place="right"
+                    >
+                        <LanguageSelector />
+                    </MenuBarItemTooltip>
+                </div>
+                <div
+                    className={classNames(styles.menuBarItem, styles.hoverable, {
+                        [styles.active]: props.fileMenuOpen
+                    })}
+                    onMouseUp={props.onClickFile}
+                >
+                    <div className={classNames(styles.fileMenu)}>File</div>
+                    <MenuBarMenu
+                        open={props.fileMenuOpen}
+                        onRequestClose={props.onRequestCloseFile}
+                    >
+                        <MenuItemTooltip id="new">
+                            <MenuItem>New</MenuItem>
+                        </MenuItemTooltip>
+                        <MenuSection>
+                            <MenuItemTooltip id="save">
+                                <MenuItem>Save now</MenuItem>
+                            </MenuItemTooltip>
+                            <MenuItemTooltip id="copy">
+                                <MenuItem>Save as a copy</MenuItem>
+                            </MenuItemTooltip>
+                        </MenuSection>
+                        <MenuSection>
+                            <ProjectLoader>{(renderFileInput, loadProject, loadProps) => (
+                                <MenuItem
+                                    onClick={loadProject}
+                                    {...loadProps}
+                                >
+                                    Upload from your computer
+                                    {renderFileInput()}
+                                </MenuItem>
+                            )}</ProjectLoader>
+                            <ProjectSaver>{(saveProject, saveProps) => (
+                                <MenuItem
+                                    onClick={saveProject}
+                                    {...saveProps}
+                                >
+                                    Download to your computer
+                                </MenuItem>
+                            )}</ProjectSaver>
+                        </MenuSection>
+                    </MenuBarMenu>
+                </div>
+                <div
+                    className={classNames(styles.menuBarItem, styles.hoverable, {
+                        [styles.active]: props.editMenuOpen
+                    })}
+                    onMouseUp={props.onClickEdit}
+                >
+                    <div className={classNames(styles.editMenu)}>Edit</div>
+                    <MenuBarMenu
+                        open={props.editMenuOpen}
+                        onRequestClose={props.onRequestCloseEdit}
+                    >
+                        <MenuItemTooltip id="undo">
+                            <MenuItem>Undo</MenuItem>
+                        </MenuItemTooltip>
+                        <MenuItemTooltip id="redo">
+                            <MenuItem>Redo</MenuItem>
+                        </MenuItemTooltip>
+                        <MenuSection>
+                            <MenuItemTooltip id="turbo">
+                                <MenuItem>Turbo mode</MenuItem>
+                            </MenuItemTooltip>
+                        </MenuSection>
+                    </MenuBarMenu>
+                </div>
             </div>
-            <SaveButton className={styles.menuItem} />
-            <LoadButton className={styles.menuItem} />
-            <LanguageSelector className={styles.menuItem} />
+            <Divider className={classNames(styles.divider)} />
+            <div className={classNames(styles.menuBarItem)}>
+                <MenuBarItemTooltip id="title-field">
+                    <input
+                        disabled
+                        className={classNames(styles.titleField)}
+                        placeholder="Untitled-1"
+                    />
+                </MenuBarItemTooltip>
+            </div>
+            <div className={classNames(styles.menuBarItem)}>
+                <MenuBarItemTooltip id="share-button">
+                    <Button className={classNames(styles.shareButton)}>
+                        <FormattedMessage
+                            defaultMessage="Share"
+                            description="Label for project share button"
+                            id="gui.menuBar.share"
+                        />
+                    </Button>
+                </MenuBarItemTooltip>
+            </div>
+            <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
+                <MenuBarItemTooltip id="community-button">
+                    <Button
+                        className={classNames(styles.communityButton)}
+                        iconClassName={styles.communityButtonIcon}
+                        iconSrc={communityIcon}
+                    >
+                        <FormattedMessage
+                            defaultMessage="See Community"
+                            description="Label for see community button"
+                            id="gui.menuBar.seeCommunity"
+                        />
+                    </Button>
+                </MenuBarItemTooltip>
+            </div>
         </div>
-        <div className={styles.buttonWrapper}>
-            <img
-                className={styles.indicatorIcon}
-                src={orangeIndicatorIcon}
-                id="gui.menuBar.deviceManagerIndicator"
-            />
-            <Button
-                className={styles.button}
-                onClick={props.onDeviceConnect}
+        <div className={styles.accountInfoWrapper}>
+						<div
+								aria-label="Connect to Bluetooth"
+								className={classNames(styles.menuBarItem, styles.hoverable)}
+								onClick={props.onScanBluetooth}
+						>
+                <img
+                    className={styles.indicatorIcon}
+                    src={orangeIndicatorIcon}
+                    id="gui.menuBar.bluetoothIndicator"
+                />
+								<img
+										className={styles.bluetoothIcon}
+										src={bluetoothIcon}
+								/>
+						</div>
+            <div
+                aria-label="How-to Library"
+                className={classNames(styles.menuBarItem, styles.hoverable)}
+                onClick={props.onOpenTipLibrary}
             >
                 <img
-                    className={styles.buttonIcon}
-                    draggable={false}
-                    src={deviceManagerIcon}
+                    className={styles.helpIcon}
+                    src={helpIcon}
                 />
-                <span className={styles.feedbackText}>
-                    <FormattedMessage
-                        defaultMessage="Connect to micro:bit"
-                        description="Label for connect button"
-                        id="gui.menuBar.deviceManager"
+            </div>
+            <MenuBarItemTooltip id="mystuff">
+                <div
+                    className={classNames(
+                        styles.menuBarItem,
+                        styles.hoverable,
+                        styles.mystuffButton
+                    )}
+                >
+                    <img
+                        className={styles.mystuffIcon}
+                        src={mystuffIcon}
                     />
-                </span>
-            </Button>
+                </div>
+            </MenuBarItemTooltip>
+            <MenuBarItemTooltip
+                id="account-nav"
+                place="left"
+            >
+                <div
+                    className={classNames(
+                        styles.menuBarItem,
+                        styles.hoverable,
+                        styles.accountNavMenu
+                    )}
+                >
+                    <img
+                        className={styles.profileIcon}
+                        src={profileIcon}
+                    />
+                    <span>scratch-cat</span>
+                    <img
+                        className={styles.dropdownCaretIcon}
+                        src={dropdownCaret}
+                    />
+                </div>
+            </MenuBarItemTooltip>
         </div>
     </Box>
 );
 
 MenuBar.propTypes = {
+    editMenuOpen: PropTypes.bool,
+    fileMenuOpen: PropTypes.bool,
+    onClickEdit: PropTypes.func,
+    onClickFile: PropTypes.func,
+    onOpenTipLibrary: PropTypes.func,
+    onRequestCloseEdit: PropTypes.func,
+    onRequestCloseFile: PropTypes.func
 };
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+    fileMenuOpen: fileMenuOpen(state),
+    editMenuOpen: editMenuOpen(state)
+});
 
 const mapDispatchToProps = dispatch => ({
-    onDeviceConnect: () => {
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'command') {
-                if (event.data.uuid === 'text') {
-                    console.log(event.data.buffer);
-                    var buf = new Uint8Array(event.data.buffer.length);
-                    for (var i=0; i < event.data.buffer.length; i++)
-                        buf[i] = event.data.buffer.charCodeAt(i);
-                    console.log(buf);
-                    textChar.writeValue(buf);
-                } else if (event.data.uuid === 'matrix') {
-                    matrixChar.writeValue(event.data.buffer);
-                }
-            } else if (event.data.type === 'status') {
-                console.log(event.data.status);
-                if (event.data.status === 'connected')
-                    document.getElementById('gui.menuBar.deviceManagerIndicator').src = greenIndicatorIcon;
-                else if (event.data.status === 'disconnected')
-                    document.getElementById('gui.menuBar.deviceManagerIndicator').src = orangeIndicatorIcon;
-            }
-        }, false);
+    onOpenTipLibrary: () => dispatch(openTipsLibrary()),
+    onClickFile: () => dispatch(openFileMenu()),
+    onRequestCloseFile: () => dispatch(closeFileMenu()),
+    onClickEdit: () => dispatch(openEditMenu()),
+    onRequestCloseEdit: () => dispatch(closeEditMenu()),
+    onScanBluetooth: () => {
 				navigator.bluetooth.requestDevice({
 						filters: [{
 								services: [0xf005]
@@ -118,12 +336,14 @@ const mapDispatchToProps = dispatch => ({
 								.then(characteristic => {
 										characteristic.startNotifications()
 										.then(characteristic => {
-												characteristic.addEventListener('characteristicvaluechanged', onDataReceived);
+												characteristic.addEventListener('characteristicvaluechanged', event => {
+														window.postMessage({type: 'data', buffer: event.target.value.buffer}, '*');
+												});
 										});
 								}),
 								service.getCharacteristic('5261da03-fa7e-42ab-850b-7c80220097cc')
 								.then(characteristic => {
-                    textChar = characteristic;
+										textChar = characteristic;
                 }),
 								service.getCharacteristic('5261da04-fa7e-42ab-850b-7c80220097cc')
 								.then(characteristic => {
@@ -136,9 +356,25 @@ const mapDispatchToProps = dispatch => ({
     }
 });
 
-function onDataReceived (event) {
-    window.postMessage({type: 'data', buffer: event.target.value.buffer}, '*');
-}
+window.addEventListener('message', (event) => {
+		if (event.data.type === 'command') {
+				if (event.data.uuid === 'text') {
+						if (textChar === null) return;
+						var buf = new Uint8Array(event.data.buffer.length);
+						for (var i=0; i < event.data.buffer.length; i++)
+								buf[i] = event.data.buffer.charCodeAt(i);
+						textChar.writeValue(buf);
+				} else if (event.data.uuid === 'matrix') {
+						if (matrixChar === null) return;
+						matrixChar.writeValue(event.data.buffer);
+				}
+		} else if (event.data.type === 'status') {
+				if (event.data.status === 'connected')
+						document.getElementById('gui.menuBar.bluetoothIndicator').src = greenIndicatorIcon;
+				else if (event.data.status === 'disconnected')
+						document.getElementById('gui.menuBar.bluetoothIndicator').src = orangeIndicatorIcon;
+		}
+}, false);
 
 export default connect(
     mapStateToProps,

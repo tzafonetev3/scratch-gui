@@ -17,7 +17,7 @@ class ErrorBoundary extends React.Component {
     componentDidCatch (error, info) {
         // Display fallback UI
         this.setState({hasError: true});
-        log.error(`Unhandled Error: ${error}, info: ${info}`);
+        log.error(`Unhandled Error: ${error.stack}\nComponent stack: ${info.componentStack}`);
         analytics.event({
             category: 'error',
             action: 'Fatal Error',
@@ -35,7 +35,12 @@ class ErrorBoundary extends React.Component {
 
     render () {
         if (this.state.hasError) {
-            if (platform.name === 'IE') {
+            // don't use array.includes because that's something that causes IE to crash.
+            if (
+                platform.name === 'IE' ||
+                platform.name === 'Opera' ||
+                platform.name === 'Opera Mini' ||
+                platform.name === 'Silk') {
                 return <BrowserModalComponent onBack={this.handleBack} />;
             }
             return <CrashMessageComponent onReload={this.handleReload} />;
