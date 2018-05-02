@@ -25,8 +25,7 @@ import greenIndicatorIcon from './icon--indicator_green.svg';
 import orangeIndicatorIcon from './icon--indicator_orange.svg';
 import redIndicatorIcon from './icon--indicator_red.svg';
 
-let textChar = null;
-let matrixChar = null;
+let txChar = null;
 
 const MenuBar = props => (
     <Box
@@ -82,16 +81,15 @@ const mapDispatchToProps = dispatch => ({
     onDeviceConnect: () => {
         window.addEventListener('message', (event) => {
             if (event.data.type === 'command') {
-                if (event.data.uuid === 'text') {
-                    console.log(event.data.buffer);
-                    var buf = new Uint8Array(event.data.buffer.length);
-                    for (var i=0; i < event.data.buffer.length; i++)
-                        buf[i] = event.data.buffer.charCodeAt(i);
-                    console.log(buf);
-                    textChar.writeValue(buf);
-                } else if (event.data.uuid === 'matrix') {
-                    matrixChar.writeValue(event.data.buffer);
-                }
+                //if (event.data.uuid === 'text') {
+                    //console.log(event.data.buffer);
+                    //var buf = new Uint8Array(event.data.buffer.length);
+                    //for (var i=0; i < event.data.buffer.length; i++)
+                        //buf[i] = event.data.buffer.charCodeAt(i);
+                    //console.log(buf);
+                    //textChar.writeValue(buf);
+                console.log(event.data.buffer);
+                txChar.writeValue(event.data.buffer);
             } else if (event.data.type === 'status') {
                 console.log(event.data.status);
                 if (event.data.status === 'connected')
@@ -121,13 +119,9 @@ const mapDispatchToProps = dispatch => ({
 												characteristic.addEventListener('characteristicvaluechanged', onDataReceived);
 										});
 								}),
-								service.getCharacteristic('5261da03-fa7e-42ab-850b-7c80220097cc')
+								service.getCharacteristic('5261da02-fa7e-42ab-850b-7c80220097cc')
 								.then(characteristic => {
-                    textChar = characteristic;
-                }),
-								service.getCharacteristic('5261da04-fa7e-42ab-850b-7c80220097cc')
-								.then(characteristic => {
-                    matrixChar = characteristic;
+                    txChar = characteristic;
                 })
 						]).then(characteristics => {
                 window.postMessage({type: 'status', status: 'connected'}, '*');

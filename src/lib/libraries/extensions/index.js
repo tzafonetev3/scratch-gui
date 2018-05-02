@@ -25,7 +25,7 @@ export default [
         name: 'micro:bit',
         extensionURL: 'microbit',
         iconURL: microbitImage,
-        description: 'Control the micro:bit',
+        description: 'Control the micro:bit [PRO Version]',
         featured: true
     },
     {
