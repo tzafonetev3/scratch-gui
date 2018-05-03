@@ -1,6 +1,7 @@
-webpackJsonp([2],{
+var GUI =
+webpackJsonpGUI([2],{
 
-/***/ 505:
+/***/ 576:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14,29 +15,25 @@ var _reactDom = __webpack_require__(12);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRedux = __webpack_require__(6);
+var _reactRedux = __webpack_require__(8);
 
-var _appStateHoc = __webpack_require__(25);
-
-var _appStateHoc2 = _interopRequireDefault(_appStateHoc);
-
-var _controls = __webpack_require__(33);
+var _controls = __webpack_require__(55);
 
 var _controls2 = _interopRequireDefault(_controls);
 
-var _blocks = __webpack_require__(99);
+var _blocks = __webpack_require__(103);
 
 var _blocks2 = _interopRequireDefault(_blocks);
 
-var _gui = __webpack_require__(28);
+var _gui = __webpack_require__(25);
 
 var _gui2 = _interopRequireDefault(_gui);
 
-var _projectLoaderHoc = __webpack_require__(34);
+var _projectLoaderHoc = __webpack_require__(42);
 
 var _projectLoaderHoc2 = _interopRequireDefault(_projectLoaderHoc);
 
-var _blocksOnly = __webpack_require__(506);
+var _blocksOnly = __webpack_require__(577);
 
 var _blocksOnly2 = _interopRequireDefault(_blocksOnly);
 
@@ -63,7 +60,7 @@ var BlocksOnly = function BlocksOnly(props) {
     );
 };
 
-var App = (0, _appStateHoc2.default)((0, _projectLoaderHoc2.default)(BlocksOnly));
+var App = (0, _projectLoaderHoc2.default)(BlocksOnly);
 
 var appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
@@ -72,11 +69,11 @@ _reactDom2.default.render(_react2.default.createElement(App, null), appTarget);
 
 /***/ }),
 
-/***/ 506:
+/***/ 577:
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(507);
+var content = __webpack_require__(578);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -123,7 +120,7 @@ if(false) {
 
 /***/ }),
 
-/***/ 507:
+/***/ 578:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(2)(false);
@@ -131,14 +128,14 @@ exports = module.exports = __webpack_require__(2)(false);
 
 
 // module
-exports.push([module.i, ".blocks-only_controls_1gHLl {\n    position: absolute;\n    z-index: 2;\n    top: 10px;\n    right: 15px;\n}\n", ""]);
+exports.push([module.i, ".blocks-only_controls_2GEvs {\n    position: absolute;\n    z-index: 2;\n    top: 10px;\n    right: 15px;\n}\n", ""]);
 
 // exports
 exports.locals = {
-	"controls": "blocks-only_controls_1gHLl"
+	"controls": "blocks-only_controls_2GEvs"
 };
 
 /***/ })
 
-},[505]);
+},[576]);
 //# sourceMappingURL=blocksonly.js.map
