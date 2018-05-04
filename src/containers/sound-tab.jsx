@@ -16,6 +16,7 @@ import SoundEditor from './sound-editor.jsx';
 import SoundLibrary from './sound-library.jsx';
 
 import soundLibraryContent from '../lib/libraries/sounds.json';
+import {handleFileUpload, soundUpload} from '../lib/file-uploader.js';
 
 import {connect} from 'react-redux';
 
@@ -33,7 +34,10 @@ class SoundTab extends React.Component {
             'handleDeleteSound',
             'handleDuplicateSound',
             'handleNewSound',
-            'handleSurpriseSound'
+            'handleSurpriseSound',
+            'handleFileUploadClick',
+            'handleSoundUpload',
+            'setFileInput'
         ]);
         this.state = {selectedSoundIndex: 0};
     }
@@ -98,6 +102,24 @@ class SoundTab extends React.Component {
         });
     }
 
+    handleFileUploadClick () {
+        this.fileInput.click();
+    }
+
+    handleSoundUpload (e) {
+        const storage = this.props.vm.runtime.storage;
+        const handleSound = newSound => this.props.vm.addSound(newSound)
+            .then(() => this.handleNewSound());
+
+        handleFileUpload(e.target, (buffer, fileType, fileName) => {
+            soundUpload(buffer, fileType, fileName, storage, handleSound);
+        });
+    }
+
+    setFileInput (input) {
+        this.fileInput = input;
+    }
+
     render () {
         const {
             intl,
@@ -115,13 +137,14 @@ class SoundTab extends React.Component {
         const sounds = sprite.sounds ? sprite.sounds.map(sound => (
             {
                 url: soundIcon,
-                name: sound.name
+                name: sound.name,
+                details: (sound.sampleCount / sound.rate).toFixed(2)
             }
         )) : [];
 
         const messages = defineMessages({
             fileUploadSound: {
-                defaultMessage: 'Coming Soon',
+                defaultMessage: 'Upload Sound',
                 description: 'Button to upload sound from file in the editor tab',
                 id: 'gui.soundTab.fileUploadSound'
             },
@@ -136,7 +159,7 @@ class SoundTab extends React.Component {
                 id: 'gui.soundTab.recordSound'
             },
             addSound: {
-                defaultMessage: 'Sound Library',
+                defaultMessage: 'Choose a Sound',
                 description: 'Button to add a sound in the editor tab',
                 id: 'gui.soundTab.addSoundFromLibrary'
             }
@@ -150,7 +173,11 @@ class SoundTab extends React.Component {
                     onClick: onNewSoundFromLibraryClick
                 }, {
                     title: intl.formatMessage(messages.fileUploadSound),
-                    img: fileUploadIcon
+                    img: fileUploadIcon,
+                    onClick: this.handleFileUploadClick,
+                    fileAccept: '.wav, .mp3',
+                    fileChange: this.handleSoundUpload,
+                    fileInput: this.setFileInput
                 }, {
                     title: intl.formatMessage(messages.surpriseSound),
                     img: surpriseIcon,

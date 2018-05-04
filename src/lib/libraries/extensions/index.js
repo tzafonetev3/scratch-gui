@@ -1,10 +1,11 @@
-import boostImage from './boost.png';
 import musicImage from './music.png';
 import penImage from './pen.png';
-import speechImage from './speech.png';
 import videoImage from './video-sensing.png';
-import wedoImage from './wedo.png';
+import speechImage from './speech.png';
 import microbitImage from './microbit.png';
+import wedoImage from './wedo.png';
+import ev3Image from './ev3.png';
+import boostImage from './boost.png';
 
 export default [
     {
@@ -30,14 +31,14 @@ export default [
     },
     {
         name: 'LEGO WeDo 2.0',
-        extensionURL: '',
-        iconURL: wedoImage,
-        description: 'Build with motors and sensors.',
-        featured: true,
-        disabled: true
+        name: 'Video Motion',
+        extensionURL: 'videoSensing',
+        iconURL: videoImage,
+        description: 'Detect motion with the camera.',
+        featured: true
     },
     {
-        name: 'Speech',
+        name: 'Speech Recognition',
         extensionURL: '',
         iconURL: speechImage,
         description: 'Talk to your projects.',
@@ -45,10 +46,26 @@ export default [
         disabled: true
     },
     {
-        name: 'Video Sensing',
+        name: 'Micro:bit',
         extensionURL: '',
-        iconURL: videoImage,
-        description: 'Detect motion with the camera.',
+        iconURL: microbitImage,
+        description: 'Connect your projects with the physical world.',
+        featured: true,
+        disabled: true
+    },
+    {
+        name: 'LEGO WeDo 2.0',
+        extensionURL: '',
+        iconURL: wedoImage,
+        description: 'Build with motors and sensors.',
+        featured: true,
+        disabled: true
+    },
+    {
+        name: 'LEGO MINDSTORMS EV3',
+        extensionURL: '',
+        iconURL: ev3Image,
+        description: 'Build interactive robots and more.',
         featured: true,
         disabled: true
     },
@@ -56,7 +73,7 @@ export default [
         name: 'LEGO Boost',
         extensionURL: '',
         iconURL: boostImage,
-        description: 'Build robots and more.',
+        description: 'Build with motors and sensors.',
         featured: true,
         disabled: true
     }
