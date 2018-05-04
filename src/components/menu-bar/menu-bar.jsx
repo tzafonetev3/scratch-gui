@@ -39,6 +39,7 @@ import redIndicatorIcon from './icon--indicator_red.svg';
 
 import helpIcon from './icon--help.svg';
 
+let rxChar = null;
 let textChar = null;
 let matrixChar = null;
 
@@ -334,9 +335,10 @@ const mapDispatchToProps = dispatch => ({
 						return Promise.all([
 								service.getCharacteristic('5261da01-fa7e-42ab-850b-7c80220097cc')
 								.then(characteristic => {
-										characteristic.startNotifications()
+                    rxChar = characteristic;
+										rxChar.startNotifications()
 										.then(characteristic => {
-												characteristic.addEventListener('characteristicvaluechanged', event => {
+												rxChar.addEventListener('characteristicvaluechanged', event => {
 														window.postMessage({type: 'data', buffer: event.target.value.buffer}, '*');
 												});
 										});
