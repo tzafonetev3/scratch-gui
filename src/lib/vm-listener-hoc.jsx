@@ -5,7 +5,7 @@ import VM from 'scratch-vm';
 
 import {connect} from 'react-redux';
 
-import {updateEditingTarget, updateTargets} from '../reducers/targets';
+import {updateTargets} from '../reducers/targets';
 import {updateBlockDrag} from '../reducers/block-drag';
 import {updateMonitors} from '../reducers/monitors';
 
@@ -50,19 +50,16 @@ const vmListenerHOC = function (WrappedComponent) {
 
             this.props.vm.postIOData('keyboard', {
                 keyCode: e.keyCode,
+                key: e.key,
                 isDown: true
             });
-
-            // Don't stop browser keyboard shortcuts
-            if (e.metaKey || e.altKey || e.ctrlKey) return;
-
-            e.preventDefault();
         }
         handleKeyUp (e) {
             // Always capture up events,
             // even those that have switched to other targets.
             this.props.vm.postIOData('keyboard', {
                 keyCode: e.keyCode,
+                key: e.key,
                 isDown: false
             });
 
@@ -99,14 +96,11 @@ const vmListenerHOC = function (WrappedComponent) {
         attachKeyboardEvents: true
     };
     const mapStateToProps = state => ({
-        vm: state.vm,
-        hoveredSprite: state.hoveredTarget.sprite,
-        editingTarget: state.targets.editingTarget
+        vm: state.vm
     });
     const mapDispatchToProps = dispatch => ({
         onTargetsUpdate: data => {
-            dispatch(updateEditingTarget(data.editingTarget));
-            dispatch(updateTargets(data.targetList));
+            dispatch(updateTargets(data.targetList, data.editingTarget));
         },
         onMonitorsUpdate: monitorList => {
             dispatch(updateMonitors(monitorList));
