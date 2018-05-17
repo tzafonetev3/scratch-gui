@@ -1,7 +1,7 @@
 var GUI =
-webpackJsonpGUI([3],{
+(window["webpackJsonpGUI"] = window["webpackJsonpGUI"] || []).push([[2],{
 
-/***/ 579:
+/***/ 202:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15,31 +15,31 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(12);
+var _reactDom = __webpack_require__(21);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRedux = __webpack_require__(8);
+var _reactRedux = __webpack_require__(11);
 
-var _controls = __webpack_require__(55);
+var _controls = __webpack_require__(90);
 
 var _controls2 = _interopRequireDefault(_controls);
 
-var _stage = __webpack_require__(143);
+var _stage = __webpack_require__(126);
 
 var _stage2 = _interopRequireDefault(_stage);
 
-var _box = __webpack_require__(7);
+var _box = __webpack_require__(12);
 
 var _box2 = _interopRequireDefault(_box);
 
-var _gui = __webpack_require__(25);
+var _gui = __webpack_require__(68);
 
 var _gui2 = _interopRequireDefault(_gui);
 
-var _projectLoaderHoc = __webpack_require__(42);
+var _hashParserHoc = __webpack_require__(56);
 
-var _projectLoaderHoc2 = _interopRequireDefault(_projectLoaderHoc);
+var _hashParserHoc2 = _interopRequireDefault(_hashParserHoc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -135,7 +135,7 @@ var Player = function (_React$Component) {
     return Player;
 }(_react2.default.Component);
 
-var App = (0, _projectLoaderHoc2.default)(Player);
+var App = (0, _hashParserHoc2.default)(Player);
 
 var appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
@@ -144,5 +144,5 @@ _reactDom2.default.render(_react2.default.createElement(App, null), appTarget);
 
 /***/ })
 
-},[579]);
+},[[202,0]]]);
 //# sourceMappingURL=compatibilitytesting.js.map
