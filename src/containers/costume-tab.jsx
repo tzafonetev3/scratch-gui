@@ -11,6 +11,7 @@ import BackdropLibrary from './backdrop-library.jsx';
 import CameraModal from './camera-modal.jsx';
 import {connect} from 'react-redux';
 import {handleFileUpload, costumeUpload} from '../lib/file-uploader.js';
+import errorBoundaryHOC from '../lib/error-boundary-hoc.jsx';
 
 import {
     closeCameraCapture,
@@ -194,10 +195,13 @@ class CostumeTab extends React.Component {
     setFileInput (input) {
         this.fileInput = input;
     }
-    formatCostumeDetails (size) {
+    formatCostumeDetails (size, optResolution) {
+        // If no resolution is given, assume that the costume is an SVG
+        const resolution = optResolution ? optResolution : 1;
+        // Convert size to stage units by dividing by resolution
         // Round up width and height for scratch-flash compatibility
         // https://github.com/LLK/scratch-flash/blob/9fbac92ef3d09ceca0c0782f8a08deaa79e4df69/src/ui/media/MediaInfo.as#L224-L237
-        return `${Math.ceil(size[0])} x ${Math.ceil(size[1])}`;
+        return `${Math.ceil(size[0] / resolution)} x ${Math.ceil(size[1] / resolution)}`;
     }
     render () {
         const {
@@ -232,7 +236,7 @@ class CostumeTab extends React.Component {
         const costumeData = (target.costumes || []).map(costume => ({
             name: costume.name,
             assetId: costume.assetId,
-            details: costume.size ? this.formatCostumeDetails(costume.size) : null
+            details: costume.size ? this.formatCostumeDetails(costume.size, costume.bitmapResolution) : null
         }));
 
         return (
@@ -364,7 +368,9 @@ const mapDispatchToProps = dispatch => ({
     }
 });
 
-export default injectIntl(connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CostumeTab));
+export default errorBoundaryHOC('Costume Tab')(
+    injectIntl(connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )(CostumeTab))
+);
