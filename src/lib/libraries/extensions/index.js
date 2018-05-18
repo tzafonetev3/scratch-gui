@@ -25,13 +25,12 @@ export default [
     },
     {
         name: 'ScratchBit',
-        extensionURL: 'scratchbit',
+        extensionId: 'scratchbit',
         iconURL: scratchbitImage,
         description: 'Build with ScratchBit.',
         featured: true
     },
     {
-        name: 'LEGO WeDo 2.0',
         name: 'Video Motion',
         extensionId: 'videoSensing',
         iconURL: videoImage,
