@@ -9,6 +9,7 @@
     left: 0;
     border: 1px solid $ui-black-transparent;
     border-top-right-radius: $space;
+    border-bottom-right-radius: $space;
 }
 
 .blocks :global(.blocklyMainBackground) {
@@ -34,4 +35,9 @@
 */
 .blocks :global(.scratchCategoryMenuItemLabel) {
     font-size: 0.65rem;
+}
+
+.blocks :global(.blocklyMinimalBody) {
+    min-width: auto;
+    min-height: auto;
 }

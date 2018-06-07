@@ -17,6 +17,7 @@ class SeleniumHelper {
             'findByText',
             'findByXpath',
             'getDriver',
+            'getSauceDriver',
             'getLogs',
             'loadUri',
             'rightClickText'
@@ -31,7 +32,8 @@ class SeleniumHelper {
             modal: '*[@class="ReactModalPortal"]',
             reportedValue: '*[@class="blocklyDropDownContent"]',
             soundsTab: "*[@id='react-tabs-5']",
-            spriteTile: '*[starts-with(@class,"react-contextmenu-wrapper")]'
+            spriteTile: '*[starts-with(@class,"react-contextmenu-wrapper")]',
+            monitors: '*[starts-with(@class,"stage_monitor-wrapper")]'
         };
     }
 
@@ -45,6 +47,21 @@ class SeleniumHelper {
         this.driver = new webdriver.Builder()
             .forBrowser('chrome')
             .withCapabilities(chromeCapabilities)
+            .build();
+        return this.driver;
+    }
+
+    getSauceDriver (username, accessKey, configs) {
+        this.driver = new webdriver.Builder()
+            .withCapabilities({
+                browserName: configs.browserName,
+                platform: configs.platform,
+                version: configs.version,
+                username: username,
+                accessKey: accessKey
+            })
+            .usingServer(`http://${username}:${accessKey
+            }@ondemand.saucelabs.com:80/wd/hub`)
             .build();
         return this.driver;
     }

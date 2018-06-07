@@ -7,6 +7,7 @@ import wedoImage from './wedo.png';
 import scratchbitImage from './scratchbit.png';
 import ev3Image from './ev3.png';
 import boostImage from './boost.png';
+import translateImage from './translate.png';
 
 export default [
     {
@@ -28,6 +29,12 @@ export default [
         extensionId: 'scratchbit',
         iconURL: scratchbitImage,
         description: 'Build with ScratchBit.',
+        featured: true
+    },
+        name: 'Google Translate',
+        extensionId: 'translate',
+        iconURL: translateImage,
+        description: 'Translate text into many languages.',
         featured: true
     },
     {

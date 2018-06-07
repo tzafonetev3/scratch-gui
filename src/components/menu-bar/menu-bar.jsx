@@ -15,6 +15,7 @@ import {MenuItem, MenuSection} from '../menu/menu.jsx';
 import ProjectSaver from '../../containers/project-saver.jsx';
 
 import {openTipsLibrary} from '../../reducers/modals';
+import {setPlayer} from '../../reducers/mode';
 import {
     openFileMenu,
     closeFileMenu,
@@ -270,19 +271,33 @@ const MenuBar = props => (
                 </MenuBarItemTooltip>
             </div>
             <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
-                <MenuBarItemTooltip id="community-button">
+                {props.enableCommunity ?
                     <Button
                         className={classNames(styles.communityButton)}
                         iconClassName={styles.communityButtonIcon}
                         iconSrc={communityIcon}
+                        onClick={props.onSeeCommunity}
                     >
                         <FormattedMessage
                             defaultMessage="See Community"
                             description="Label for see community button"
                             id="gui.menuBar.seeCommunity"
                         />
-                    </Button>
-                </MenuBarItemTooltip>
+                    </Button> :
+                    <MenuBarItemTooltip id="community-button">
+                        <Button
+                            className={classNames(styles.communityButton)}
+                            iconClassName={styles.communityButtonIcon}
+                            iconSrc={communityIcon}
+                        >
+                            <FormattedMessage
+                                defaultMessage="See Community"
+                                description="Label for see community button"
+                                id="gui.menuBar.seeCommunity"
+                            />
+                        </Button>
+                    </MenuBarItemTooltip>
+                }
             </div>
         </div>
         <div className={classNames(styles.menuBarItem, styles.feedbackButtonWrapper)}>
@@ -374,12 +389,14 @@ const MenuBar = props => (
 
 MenuBar.propTypes = {
     editMenuOpen: PropTypes.bool,
+    enableCommunity: PropTypes.bool,
     fileMenuOpen: PropTypes.bool,
     onClickEdit: PropTypes.func,
     onClickFile: PropTypes.func,
     onOpenTipLibrary: PropTypes.func,
     onRequestCloseEdit: PropTypes.func,
-    onRequestCloseFile: PropTypes.func
+    onRequestCloseFile: PropTypes.func,
+    onSeeCommunity: PropTypes.func
 };
 
 const mapStateToProps = state => ({
@@ -393,6 +410,7 @@ const mapDispatchToProps = dispatch => ({
     onRequestCloseFile: () => dispatch(closeFileMenu()),
     onClickEdit: () => dispatch(openEditMenu()),
     onRequestCloseEdit: () => dispatch(closeEditMenu()),
+    onSeeCommunity: () => dispatch(setPlayer(true)),
     onScanBluetooth: () => {
         navigator.bluetooth.requestDevice({
             filters: [{

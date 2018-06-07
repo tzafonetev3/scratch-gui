@@ -31,6 +31,11 @@ class ListMonitor extends React.Component {
     }
 
     handleActivate (index) {
+        // Do nothing if activating the currently active item
+        if (this.state.activeIndex === index) {
+            return;
+        }
+
         this.setState({
             activeIndex: index,
             activeValue: this.props.value[index]
@@ -67,7 +72,7 @@ class ListMonitor extends React.Component {
         else if (e.key === 'ArrowDown') navigateDirection = 1;
         if (navigateDirection) {
             this.handleDeactivate(); // Submit in-progress edits
-            const newIndex = (previouslyActiveIndex + navigateDirection) % this.props.value.length;
+            const newIndex = this.wrapListIndex(previouslyActiveIndex + navigateDirection, this.props.value.length);
             this.setState({
                 activeIndex: newIndex,
                 activeValue: this.props.value[newIndex]
@@ -82,7 +87,7 @@ class ListMonitor extends React.Component {
                 .concat([newListItemValue])
                 .concat(listValue.slice(previouslyActiveIndex + newValueOffset));
             setVariableValue(vm, targetId, variableId, newListValue);
-            const newIndex = (previouslyActiveIndex + newValueOffset) % newListValue.length;
+            const newIndex = this.wrapListIndex(previouslyActiveIndex + newValueOffset, newListValue.length);
             this.setState({
                 activeIndex: newIndex,
                 activeValue: newListItemValue
@@ -139,6 +144,11 @@ class ListMonitor extends React.Component {
         window.addEventListener('mouseup', onMouseUp);
 
     }
+
+    wrapListIndex (index, length) {
+        return (index + length) % length;
+    }
+
     render () {
         const {
             vm, // eslint-disable-line no-unused-vars
@@ -178,6 +188,6 @@ ListMonitor.propTypes = {
     y: PropTypes.number
 };
 
-const mapStateToProps = state => ({vm: state.vm});
+const mapStateToProps = state => ({vm: state.scratchGui.vm});
 
 export default connect(mapStateToProps)(ListMonitor);
