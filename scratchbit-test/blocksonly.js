@@ -1,14 +1,10 @@
 var GUI =
-(window["webpackJsonpGUI"] = window["webpackJsonpGUI"] || []).push([["blocksonly"],{
+(window["webpackJsonpGUI"] = window["webpackJsonpGUI"] || []).push([[3],{
 
-/***/ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/postcss-loader/lib/index.js??postcss!./src/playground/blocks-only.css":
-/*!***********************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--5-1!./node_modules/postcss-loader/lib??postcss!./src/playground/blocks-only.css ***!
-  \***********************************************************************************************************************/
-/*! no static exports found */
+/***/ 410:
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(4)(false);
 // imports
 
 
@@ -22,15 +18,11 @@ exports.locals = {
 
 /***/ }),
 
-/***/ "./src/playground/blocks-only.css":
-/*!****************************************!*\
-  !*** ./src/playground/blocks-only.css ***!
-  \****************************************/
-/*! no static exports found */
+/***/ 411:
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../node_modules/css-loader??ref--5-1!../../node_modules/postcss-loader/lib??postcss!./blocks-only.css */ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/postcss-loader/lib/index.js??postcss!./src/playground/blocks-only.css");
+var content = __webpack_require__(410);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -44,7 +36,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -52,50 +44,50 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/playground/blocks-only.jsx":
-/*!****************************************!*\
-  !*** ./src/playground/blocks-only.jsx ***!
-  \****************************************/
-/*! no static exports found */
+/***/ 412:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+var _reactDom = __webpack_require__(33);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+var _reactRedux = __webpack_require__(7);
 
-var _controls = __webpack_require__(/*! ../containers/controls.jsx */ "./src/containers/controls.jsx");
+var _controls = __webpack_require__(247);
 
 var _controls2 = _interopRequireDefault(_controls);
 
-var _blocks = __webpack_require__(/*! ../containers/blocks.jsx */ "./src/containers/blocks.jsx");
+var _blocks = __webpack_require__(313);
 
 var _blocks2 = _interopRequireDefault(_blocks);
 
-var _gui = __webpack_require__(/*! ../containers/gui.jsx */ "./src/containers/gui.jsx");
+var _gui = __webpack_require__(150);
 
 var _gui2 = _interopRequireDefault(_gui);
 
-var _hashParserHoc = __webpack_require__(/*! ../lib/hash-parser-hoc.jsx */ "./src/lib/hash-parser-hoc.jsx");
+var _hashParserHoc = __webpack_require__(112);
 
 var _hashParserHoc2 = _interopRequireDefault(_hashParserHoc);
 
-var _blocksOnly = __webpack_require__(/*! ./blocks-only.css */ "./src/playground/blocks-only.css");
+var _appStateHoc = __webpack_require__(111);
+
+var _appStateHoc2 = _interopRequireDefault(_appStateHoc);
+
+var _blocksOnly = __webpack_require__(411);
 
 var _blocksOnly2 = _interopRequireDefault(_blocksOnly);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
-    return { vm: state.vm };
+    return { vm: state.scratchGui.vm };
 };
 
 var VMBlocks = (0, _reactRedux.connect)(mapStateToProps)(_blocks2.default);
@@ -115,7 +107,7 @@ var BlocksOnly = function BlocksOnly(props) {
     );
 };
 
-var App = (0, _hashParserHoc2.default)(BlocksOnly);
+var App = (0, _hashParserHoc2.default)((0, _appStateHoc2.default)(BlocksOnly));
 
 var appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
@@ -124,5 +116,5 @@ _reactDom2.default.render(_react2.default.createElement(App, null), appTarget);
 
 /***/ })
 
-},[["./src/playground/blocks-only.jsx","lib.min"]]]);
+},[[412,0]]]);
 //# sourceMappingURL=blocksonly.js.map

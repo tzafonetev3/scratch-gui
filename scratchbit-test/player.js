@@ -1,14 +1,10 @@
 var GUI =
-(window["webpackJsonpGUI"] = window["webpackJsonpGUI"] || []).push([["player"],{
+(window["webpackJsonpGUI"] = window["webpackJsonpGUI"] || []).push([[1],{
 
-/***/ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/postcss-loader/lib/index.js??postcss!./src/playground/player.css":
-/*!******************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--5-1!./node_modules/postcss-loader/lib??postcss!./src/playground/player.css ***!
-  \******************************************************************************************************************/
-/*! no static exports found */
+/***/ 406:
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+exports = module.exports = __webpack_require__(4)(false);
 // imports
 
 
@@ -23,15 +19,11 @@ exports.locals = {
 
 /***/ }),
 
-/***/ "./src/playground/player.css":
-/*!***********************************!*\
-  !*** ./src/playground/player.css ***!
-  \***********************************/
-/*! no static exports found */
+/***/ 407:
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../node_modules/css-loader??ref--5-1!../../node_modules/postcss-loader/lib??postcss!./player.css */ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/postcss-loader/lib/index.js??postcss!./src/playground/player.css");
+var content = __webpack_require__(406);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -45,7 +37,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(3)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -53,11 +45,7 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./src/playground/player.jsx":
-/*!***********************************!*\
-  !*** ./src/playground/player.jsx ***!
-  \***********************************/
-/*! no static exports found */
+/***/ 408:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65,35 +53,44 @@ if(false) {}
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+var _reactDom = __webpack_require__(33);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _box = __webpack_require__(/*! ../components/box/box.jsx */ "./src/components/box/box.jsx");
+var _box = __webpack_require__(16);
 
 var _box2 = _interopRequireDefault(_box);
 
-var _gui = __webpack_require__(/*! ../containers/gui.jsx */ "./src/containers/gui.jsx");
+var _gui = __webpack_require__(150);
 
 var _gui2 = _interopRequireDefault(_gui);
 
-var _hashParserHoc = __webpack_require__(/*! ../lib/hash-parser-hoc.jsx */ "./src/lib/hash-parser-hoc.jsx");
+var _hashParserHoc = __webpack_require__(112);
 
 var _hashParserHoc2 = _interopRequireDefault(_hashParserHoc);
 
-var _player = __webpack_require__(/*! ./player.css */ "./src/playground/player.css");
+var _appStateHoc = __webpack_require__(111);
+
+var _appStateHoc2 = _interopRequireDefault(_appStateHoc);
+
+var _player = __webpack_require__(407);
 
 var _player2 = _interopRequireDefault(_player);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var WrappedGui = (0, _hashParserHoc2.default)(_gui2.default);
+var WrappedGui = (0, _hashParserHoc2.default)((0, _appStateHoc2.default)(_gui2.default));
 
-if (false) {}
+if ("production" === 'production' && (typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object') {
+    // Warn before navigating away
+    window.onbeforeunload = function () {
+        return true;
+    };
+}
 
 var Player = function Player() {
     return _react2.default.createElement(
@@ -113,5 +110,5 @@ _reactDom2.default.render(_react2.default.createElement(Player, null), appTarget
 
 /***/ })
 
-},[["./src/playground/player.jsx","lib.min"]]]);
+},[[408,0]]]);
 //# sourceMappingURL=player.js.map
