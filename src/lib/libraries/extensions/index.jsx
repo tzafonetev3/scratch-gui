@@ -6,6 +6,7 @@ import penImage from './pen.png';
 import videoImage from './video-sensing.png';
 import speechImage from './speech.png';
 import microbitImage from './microbit.png';
+import scratchbitImage from './scratchbit.png';
 import wedoImage from './wedo.png';
 import ev3Image from './ev3.png';
 import boostImage from './boost.png';
@@ -46,6 +47,19 @@ export default [
                 defaultMessage="Draw with your sprites."
                 description="Description for the 'Pen' extension"
                 id="gui.extension.pen.description"
+            />
+        ),
+        featured: true
+    },
+    {
+        name: 'ScratchGo',
+        extensionId: 'scratchbit',
+        iconURL: scratchbitImage,
+        description: (
+            <FormattedMessage
+                defaultMessage="Build with ScratchGo."
+                description="Description for the 'ScratchBit' extension"
+                id="gui.extension.scratchbit.description"
             />
         ),
         featured: true
@@ -119,8 +133,7 @@ export default [
                 id="gui.extension.microbit.description"
             />
         ),
-        featured: true,
-        disabled: true
+        featured: true
     },
     {
         name: 'LEGO WeDo 2.0',
