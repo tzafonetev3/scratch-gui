@@ -5,6 +5,7 @@ var webpack = require('webpack');
 // Plugins
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 // PostCss
 var autoprefixer = require('autoprefixer');
@@ -12,6 +13,7 @@ var postcssVars = require('postcss-simple-vars');
 var postcssImport = require('postcss-import');
 
 const base = {
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     devtool: 'cheap-module-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'build'),
@@ -26,11 +28,27 @@ const base = {
         React: 'react',
         ReactDOM: 'react-dom'
     },
+    resolve: {
+        symlinks: false
+    },
     module: {
         rules: [{
             test: /\.jsx?$/,
             loader: 'babel-loader',
-            include: path.resolve(__dirname, 'src')
+            include: [path.resolve(__dirname, 'src'), /node_modules[\\/]scratch-[^\\/]+[\\/]src/],
+            options: {
+                // Explicitly disable babelrc so we don't catch various config
+                // in much lower dependencies.
+                babelrc: false,
+                plugins: [
+                    'syntax-dynamic-import',
+                    'transform-async-to-generator',
+                    'transform-object-rest-spread',
+                    ['react-intl', {
+                        messagesDir: './translations/messages/'
+                    }]],
+                presets: [['env', {targets: {browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']}}], 'react']
+            }
         },
         {
             test: /\.css$/,
@@ -61,23 +79,25 @@ const base = {
             }]
         }]
     },
-    plugins: [].concat(process.env.NODE_ENV === 'production' ? [
-        new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
-        })
-    ] : [])
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                include: /\.min\.js$/
+            })
+        ]
+    },
+    plugins: []
 };
 
 module.exports = [
     // to run editor examples
     defaultsDeep({}, base, {
         entry: {
-            lib: ['react', 'react-dom'],
-            gui: './src/playground/index.jsx',
-            blocksonly: './src/playground/blocks-only.jsx',
-            compatibilitytesting: './src/playground/compatibility-testing.jsx',
-            player: './src/playground/player.jsx'
+            'lib.min': ['react', 'react-dom'],
+            'gui': './src/playground/index.jsx',
+            'blocksonly': './src/playground/blocks-only.jsx',
+            'compatibilitytesting': './src/playground/compatibility-testing.jsx',
+            'player': './src/playground/player.jsx'
         },
         output: {
             path: path.resolve(__dirname, 'build'),
@@ -98,34 +118,41 @@ module.exports = [
                 }
             ])
         },
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+                name: 'lib.min'
+            },
+            runtimeChunk: {
+                name: 'lib.min'
+            }
+        },
         plugins: base.plugins.concat([
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': '"' + process.env.NODE_ENV + '"',
-                'process.env.DEBUG': Boolean(process.env.DEBUG)
-            }),
-            new webpack.optimize.CommonsChunkPlugin({
-                name: 'lib',
-                filename: 'lib.min.js'
+                'process.env.DEBUG': Boolean(process.env.DEBUG),
+                'process.env.GA_ID': '"' + (process.env.GA_ID || 'UA-000000-01') + '"'
             }),
             new HtmlWebpackPlugin({
-                chunks: ['lib', 'gui'],
+                chunks: ['lib.min', 'gui'],
                 template: 'src/playground/index.ejs',
-                title: 'Scratch 3.0 GUI'
+                title: 'Scratch 3.0 GUI',
+                sentryConfig: process.env.SENTRY_CONFIG ? '"' + process.env.SENTRY_CONFIG + '"' : null
             }),
             new HtmlWebpackPlugin({
-                chunks: ['lib', 'blocksonly'],
+                chunks: ['lib.min', 'blocksonly'],
                 template: 'src/playground/index.ejs',
                 filename: 'blocks-only.html',
                 title: 'Scratch 3.0 GUI: Blocks Only Example'
             }),
             new HtmlWebpackPlugin({
-                chunks: ['lib', 'compatibilitytesting'],
+                chunks: ['lib.min', 'compatibilitytesting'],
                 template: 'src/playground/index.ejs',
                 filename: 'compatibility-testing.html',
                 title: 'Scratch 3.0 GUI: Compatibility Testing'
             }),
             new HtmlWebpackPlugin({
-                chunks: ['lib', 'player'],
+                chunks: ['lib.min', 'player'],
                 template: 'src/playground/index.ejs',
                 filename: 'player.html',
                 title: 'Scratch 3.0 GUI: Player Example'
@@ -155,7 +182,7 @@ module.exports = [
         defaultsDeep({}, base, {
             target: 'web',
             entry: {
-                'scratch-gui': './src/containers/gui.jsx'
+                'scratch-gui': './src/index.js'
             },
             output: {
                 libraryTarget: 'umd',
@@ -168,7 +195,6 @@ module.exports = [
             module: {
                 rules: base.module.rules.concat([
                     {
-                      
                         test: /\.(svg|png|wav|gif|jpg)$/,
                         loader: 'file-loader',
                         options: {

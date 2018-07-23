@@ -5,8 +5,11 @@ import Renderer from 'scratch-render';
 import VM from 'scratch-vm';
 import {connect} from 'react-redux';
 
+import {STAGE_DISPLAY_SIZES} from '../lib/layout-constants';
 import {getEventXY} from '../lib/touch-utils';
 import VideoProvider from '../lib/video/video-provider';
+import {SVGRenderer as V2SVGAdapter} from 'scratch-svg-renderer';
+import {BitmapAdapter as V2BitmapAdapter} from 'scratch-svg-renderer';
 
 import StageComponent from '../components/stage/stage.jsx';
 
@@ -35,7 +38,6 @@ class Stage extends React.Component {
             'onWheel',
             'updateRect',
             'questionListener',
-            'setCanvas',
             'setDragCanvas',
             'clearDragCanvas',
             'drawDragCanvas',
@@ -50,19 +52,26 @@ class Stage extends React.Component {
             colorInfo: null,
             question: null
         };
+        if (this.props.vm.runtime.renderer) {
+            this.renderer = this.props.vm.runtime.renderer;
+            this.canvas = this.props.vm.runtime.renderer._gl.canvas;
+        } else {
+            this.canvas = document.createElement('canvas');
+            this.renderer = new Renderer(this.canvas);
+            this.props.vm.attachRenderer(this.renderer);
+        }
+        this.props.vm.attachV2SVGAdapter(new V2SVGAdapter());
+        this.props.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
+        this.props.vm.setVideoProvider(new VideoProvider());
     }
     componentDidMount () {
         this.attachRectEvents();
         this.attachMouseEvents(this.canvas);
         this.updateRect();
-        this.renderer = new Renderer(this.canvas);
-        this.props.vm.attachRenderer(this.renderer);
         this.props.vm.runtime.addListener('QUESTION', this.questionListener);
-        this.props.vm.setVideoProvider(new VideoProvider());
     }
     shouldComponentUpdate (nextProps, nextState) {
-        return this.props.width !== nextProps.width ||
-            this.props.height !== nextProps.height ||
+        return this.props.stageSize !== nextProps.stageSize ||
             this.props.isColorPicking !== nextProps.isColorPicking ||
             this.state.colorInfo !== nextState.colorInfo ||
             this.props.isFullScreen !== nextProps.isFullScreen ||
@@ -81,6 +90,7 @@ class Stage extends React.Component {
         this.detachMouseEvents(this.canvas);
         this.detachRectEvents();
         this.stopColorPickingLoop();
+        this.props.vm.runtime.removeListener('QUESTION', this.questionListener);
     }
     questionListener (question) {
         this.setState({question: question});
@@ -350,9 +360,6 @@ class Stage extends React.Component {
             commonStopDragActions();
         }
     }
-    setCanvas (canvas) {
-        this.canvas = canvas;
-    }
     setDragCanvas (canvas) {
         this.dragCanvas = canvas;
     }
@@ -360,12 +367,11 @@ class Stage extends React.Component {
         const {
             vm, // eslint-disable-line no-unused-vars
             onActivateColorPicker, // eslint-disable-line no-unused-vars
-            useEditorDragStyle, // eslint-disable-line no-unused-vars
             ...props
         } = this.props;
         return (
             <StageComponent
-                canvasRef={this.setCanvas}
+                canvas={this.canvas}
                 colorInfo={this.state.colorInfo}
                 dragRef={this.setDragCanvas}
                 question={this.state.question}
@@ -378,14 +384,13 @@ class Stage extends React.Component {
 }
 
 Stage.propTypes = {
-    height: PropTypes.number,
     isColorPicking: PropTypes.bool,
     isFullScreen: PropTypes.bool.isRequired,
     onActivateColorPicker: PropTypes.func,
     onDeactivateColorPicker: PropTypes.func,
+    stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     useEditorDragStyle: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired,
-    width: PropTypes.number
+    vm: PropTypes.instanceOf(VM).isRequired
 };
 
 Stage.defaultProps = {
@@ -393,10 +398,10 @@ Stage.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    isColorPicking: state.colorPicker.active,
-    isFullScreen: state.mode.isFullScreen,
+    isColorPicking: state.scratchGui.colorPicker.active,
+    isFullScreen: state.scratchGui.mode.isFullScreen,
     // Do not use editor drag style in fullscreen or player mode.
-    useEditorDragStyle: !(state.mode.isFullScreen || state.mode.isPlayerOnly)
+    useEditorDragStyle: !(state.scratchGui.mode.isFullScreen || state.scratchGui.mode.isPlayerOnly)
 });
 
 const mapDispatchToProps = dispatch => ({

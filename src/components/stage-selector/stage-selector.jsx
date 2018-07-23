@@ -12,6 +12,7 @@ import backdropIcon from '../action-menu/icon--backdrop.svg';
 import fileUploadIcon from '../action-menu/icon--file-upload.svg';
 import paintIcon from '../action-menu/icon--paint.svg';
 import surpriseIcon from '../action-menu/icon--surprise.svg';
+import searchIcon from '../action-menu/icon--search.svg';
 
 const messages = defineMessages({
     addBackdropFromLibrary: {
@@ -42,10 +43,14 @@ const StageSelector = props => {
         fileInputRef,
         intl,
         selected,
+        raised,
+        receivedBlocks,
         url,
         onBackdropFileUploadClick,
         onBackdropFileUpload,
         onClick,
+        onMouseEnter,
+        onMouseLeave,
         onNewBackdropClick,
         onSurpriseBackdropClick,
         onEmptyBackdropClick,
@@ -54,20 +59,30 @@ const StageSelector = props => {
     return (
         <Box
             className={classNames(styles.stageSelector, {
-                [styles.isSelected]: selected
+                [styles.isSelected]: selected,
+                [styles.raised]: raised,
+                [styles.receivedBlocks]: receivedBlocks
             })}
             onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
             {...componentProps}
         >
             <div className={styles.header}>
-                <div className={styles.headerTitle}>Stage</div>
+                <div className={styles.headerTitle}>
+                    <FormattedMessage
+                        defaultMessage="Stage"
+                        description="Label for the stage in the stage selector"
+                        id="gui.stageSelector.stage"
+                    />
+                </div>
             </div>
             {url ? (
                 <CostumeCanvas
                     className={styles.costumeCanvas}
-                    height={54}
+                    height={48}
                     url={url}
-                    width={72}
+                    width={64}
                 />
             ) : null}
             <div className={styles.label}>
@@ -98,6 +113,10 @@ const StageSelector = props => {
                         title: intl.formatMessage(messages.addBackdropFromPaint),
                         img: paintIcon,
                         onClick: onEmptyBackdropClick
+                    }, {
+                        title: intl.formatMessage(messages.addBackdropFromLibrary),
+                        img: searchIcon,
+                        onClick: onNewBackdropClick
                     }
                 ]}
                 title={intl.formatMessage(messages.addBackdropFromLibrary)}
@@ -115,8 +134,12 @@ StageSelector.propTypes = {
     onBackdropFileUploadClick: PropTypes.func,
     onClick: PropTypes.func,
     onEmptyBackdropClick: PropTypes.func,
+    onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
     onNewBackdropClick: PropTypes.func,
     onSurpriseBackdropClick: PropTypes.func,
+    raised: PropTypes.bool.isRequired,
+    receivedBlocks: PropTypes.bool.isRequired,
     selected: PropTypes.bool.isRequired,
     url: PropTypes.string
 };

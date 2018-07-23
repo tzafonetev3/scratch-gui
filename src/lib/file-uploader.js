@@ -1,4 +1,4 @@
-import {importBitmap} from 'scratch-svg-renderer';
+import {BitmapAdapter} from 'scratch-svg-renderer';
 import log from './log.js';
 
 /**
@@ -47,6 +47,7 @@ const handleFileUpload = function (fileInput, onload) {
  * @property {string} dataFormat The data format of this asset, typically
  * the extension to be used for that particular asset, e.g. 'svg' for vector images
  * @property {string} md5 The md5 hash of the asset data, followed by '.'' and dataFormat
+ * @property {string} The md5 hash of the asset data // TODO remove duplication....
  */
 
 /**
@@ -71,13 +72,14 @@ const cacheAsset = function (storage, fileName, assetType, dataFormat, data) {
     return {
         name: fileName,
         dataFormat: dataFormat,
-        md5: `${md5}.${dataFormat}`
+        md5: `${md5}.${dataFormat}`,
+        assetId: md5
     };
 };
 
 /**
  * Handles loading a costume or a backdrop using the provided, context-relevant information.
- * @param {ArrayBuffer | string} fileData The costume data to load (this can be an image url
+ * @param {ArrayBuffer | string} fileData The costume data to load (this can be a base64 string
  * iff the image is a bitmap)
  * @param {string} fileType The MIME type of this file
  * @param {string} costumeName The user-readable name to use for the costume.
@@ -106,16 +108,19 @@ const costumeUpload = function (fileData, fileType, costumeName, storage, handle
         break;
     }
     default:
+        log.warn(`Encountered unexpected file type: ${fileType}`);
         return;
     }
 
-    const addCostumeFromBuffer = function (error, costumeBuffer) {
-        if (error) {
-            log.warn(`An error occurred while trying to extract image data: ${error}`);
-            return;
-        }
-
-        const vmCostume = cacheAsset(storage, costumeName, assetType, costumeFormat, costumeBuffer);
+    const bitmapAdapter = new BitmapAdapter();
+    const addCostumeFromBuffer = function (dataBuffer) {
+        const vmCostume = cacheAsset(
+            storage,
+            costumeName,
+            assetType,
+            costumeFormat,
+            dataBuffer
+        );
         handleCostume(vmCostume);
     };
 
@@ -124,10 +129,13 @@ const costumeUpload = function (fileData, fileType, costumeName, storage, handle
         // passing in an array buffer causes the sprite/costume
         // thumbnails to not display because the data URI for the costume
         // is invalid
-        addCostumeFromBuffer(null, new Uint8Array(fileData));
+        addCostumeFromBuffer(new Uint8Array(fileData));
     } else {
         // otherwise it's a bitmap
-        importBitmap(fileData, addCostumeFromBuffer);
+        bitmapAdapter.importBitmap(fileData, fileType).then(addCostumeFromBuffer)
+            .catch(e => {
+                log.error(e);
+            });
     }
 };
 
@@ -158,6 +166,7 @@ const soundUpload = function (fileData, fileType, soundName, storage, handleSoun
         break;
     }
     default:
+        log.warn(`Encountered unexpected file type: ${fileType}`);
         return;
     }
 
@@ -171,8 +180,49 @@ const soundUpload = function (fileData, fileType, soundName, storage, handleSoun
     handleSound(vmSound);
 };
 
+const spriteUpload = function (fileData, fileType, spriteName, storage, handleSprite) {
+    switch (fileType) {
+    case '':
+    case 'application/zip': { // We think this is a .sprite2 or .sprite3 file
+        handleSprite(new Uint8Array(fileData));
+        return;
+    }
+    case 'image/svg+xml':
+    case 'image/png':
+    case 'image/jpeg': {
+        // Make a sprite from an image by making it a costume first
+        costumeUpload(fileData, fileType, `${spriteName}-costume1`, storage, (vmCostume => {
+            const newSprite = {
+                name: spriteName,
+                isStage: false,
+                x: 0,
+                y: 0,
+                visible: true,
+                size: 100,
+                rotationStyle: 'all around',
+                direction: 90,
+                draggable: true,
+                currentCostume: 0,
+                blocks: {},
+                variables: {},
+                costumes: [vmCostume],
+                sounds: [] // TODO are all of these necessary?
+            };
+            // TODO probably just want sprite upload to handle this object directly
+            handleSprite(JSON.stringify(newSprite));
+        }));
+        return;
+    }
+    default: {
+        log.warn(`Encountered unexpected file type: ${fileType}`);
+        return;
+    }
+    }
+};
+
 export {
     handleFileUpload,
     costumeUpload,
-    soundUpload
+    soundUpload,
+    spriteUpload
 };

@@ -66,6 +66,7 @@ class ActionMenu extends React.Component {
     handleTouchOutside (e) {
         if (this.state.isOpen && !this.containerRef.contains(e.target)) {
             this.setState({isOpen: false});
+            ReactTooltip.hide();
         }
     }
     clickDelayer (fn) {
@@ -74,8 +75,9 @@ class ActionMenu extends React.Component {
         // for now all this work is to ensure the menu closes BEFORE the
         // (possibly slow) action is started.
         return event => {
+            ReactTooltip.hide();
+            if (fn) fn(event);
             this.setState({forceHide: true, isOpen: false}, () => {
-                if (fn) fn(event);
                 setTimeout(() => this.setState({forceHide: false}));
             });
         };

@@ -23,8 +23,16 @@ $more-button-size: 2.25rem;
     transition: background-color 0.2s;
 }
 
+button::-moz-focus-inner {
+    border: 0;
+}
+
 .button:hover {
-    background: $pen-primary;
+    background: $extensions-primary;
+}
+
+.button:active {
+    padding: inherit;
 }
 
 .button.coming-soon:hover {
@@ -118,7 +126,7 @@ $more-button-size: 2.25rem;
     is not very easy to style.
 */
 .tooltip {
-    background-color: $pen-primary !important;
+    background-color: $extensions-primary !important;
     opacity: 1 !important;
     border: 1px solid hsla(0, 0%, 0%, .1) !important;
     box-shadow: 0 0 .5rem hsla(0, 0%, 0%, .25) !important;
@@ -126,7 +134,7 @@ $more-button-size: 2.25rem;
 }
 
 .tooltip:after {
-    background-color: $pen-primary;
+    background-color: $extensions-primary;
 }
 
 .coming-soon-tooltip {

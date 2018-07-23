@@ -6,20 +6,23 @@ import VM from 'scratch-vm';
 
 import AssetPanel from '../components/asset-panel/asset-panel.jsx';
 import PaintEditorWrapper from './paint-editor-wrapper.jsx';
-import CostumeLibrary from './costume-library.jsx';
-import BackdropLibrary from './backdrop-library.jsx';
 import CameraModal from './camera-modal.jsx';
 import {connect} from 'react-redux';
 import {handleFileUpload, costumeUpload} from '../lib/file-uploader.js';
+import errorBoundaryHOC from '../lib/error-boundary-hoc.jsx';
+import DragConstants from '../lib/drag-constants';
 
 import {
     closeCameraCapture,
-    closeCostumeLibrary,
-    closeBackdropLibrary,
     openCameraCapture,
     openCostumeLibrary,
     openBackdropLibrary
 } from '../reducers/modals';
+
+import {
+    activateTab,
+    SOUNDS_TAB_INDEX
+} from '../reducers/editor-tab';
 
 import addLibraryBackdropIcon from '../components/asset-panel/icon--add-backdrop-lib.svg';
 import addLibraryCostumeIcon from '../components/asset-panel/icon--add-costume-lib.svg';
@@ -27,6 +30,7 @@ import fileUploadIcon from '../components/action-menu/icon--file-upload.svg';
 import paintIcon from '../components/action-menu/icon--paint.svg';
 import cameraIcon from '../components/action-menu/icon--camera.svg';
 import surpriseIcon from '../components/action-menu/icon--surprise.svg';
+import searchIcon from '../components/action-menu/icon--search.svg';
 
 import costumeLibraryContent from '../lib/libraries/costumes.json';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
@@ -83,6 +87,7 @@ class CostumeTab extends React.Component {
             'handleFileUploadClick',
             'handleCostumeUpload',
             'handleCameraBuffer',
+            'handleDrop',
             'setFileInput'
         ]);
         const {
@@ -156,11 +161,15 @@ class CostumeTab extends React.Component {
     }
     handleSurpriseCostume () {
         const item = costumeLibraryContent[Math.floor(Math.random() * costumeLibraryContent.length)];
+        const split = item.md5.split('.');
+        const type = split.length > 1 ? split[1] : null;
+        const rotationCenterX = type === 'svg' ? item.info[0] : item.info[0] / 2;
+        const rotationCenterY = type === 'svg' ? item.info[1] : item.info[1] / 2;
         const vmCostume = {
             name: item.name,
             md5: item.md5,
-            rotationCenterX: item.info[0],
-            rotationCenterY: item.info[1],
+            rotationCenterX,
+            rotationCenterY,
             bitmapResolution: item.info.length > 2 ? item.info[2] : 1,
             skinId: null
         };
@@ -191,13 +200,35 @@ class CostumeTab extends React.Component {
     handleFileUploadClick () {
         this.fileInput.click();
     }
+    handleDrop (dropInfo) {
+        if (dropInfo.dragType === DragConstants.COSTUME) {
+            const sprite = this.props.vm.editingTarget.sprite;
+            const activeCostume = sprite.costumes[this.state.selectedCostumeIndex];
+            this.props.vm.reorderCostume(this.props.vm.editingTarget.id,
+                dropInfo.index, dropInfo.newIndex);
+            this.setState({selectedCostumeIndex: sprite.costumes.indexOf(activeCostume)});
+        } else if (dropInfo.dragType === DragConstants.BACKPACK_COSTUME) {
+            this.props.vm.addCostume(dropInfo.payload.body, {
+                name: dropInfo.payload.name
+            });
+        } else if (dropInfo.dragType === DragConstants.BACKPACK_SOUND) {
+            this.props.onActivateSoundsTab();
+            this.props.vm.addSound({
+                md5: dropInfo.payload.body,
+                name: dropInfo.payload.name
+            });
+        }
+    }
     setFileInput (input) {
         this.fileInput = input;
     }
-    formatCostumeDetails (size) {
+    formatCostumeDetails (size, optResolution) {
+        // If no resolution is given, assume that the costume is an SVG
+        const resolution = optResolution ? optResolution : 1;
+        // Convert size to stage units by dividing by resolution
         // Round up width and height for scratch-flash compatibility
         // https://github.com/LLK/scratch-flash/blob/9fbac92ef3d09ceca0c0782f8a08deaa79e4df69/src/ui/media/MediaInfo.as#L224-L237
-        return `${Math.ceil(size[0])} x ${Math.ceil(size[1])}`;
+        return `${Math.ceil(size[0] / resolution)} x ${Math.ceil(size[1] / resolution)}`;
     }
     render () {
         const {
@@ -205,36 +236,30 @@ class CostumeTab extends React.Component {
             onNewCostumeFromCameraClick,
             onNewLibraryBackdropClick,
             onNewLibraryCostumeClick,
-            backdropLibraryVisible,
             cameraModalVisible,
-            costumeLibraryVisible,
-            onRequestCloseBackdropLibrary,
             onRequestCloseCameraModal,
-            onRequestCloseCostumeLibrary,
-            editingTarget,
-            sprites,
-            stage,
             vm
         } = this.props;
 
-        const target = editingTarget && sprites[editingTarget] ? sprites[editingTarget] : stage;
-
-        if (!target) {
+        if (!vm.editingTarget) {
             return null;
         }
 
-        const addLibraryMessage = target.isStage ? messages.addLibraryBackdropMsg : messages.addLibraryCostumeMsg;
-        const addFileMessage = target.isStage ? messages.addFileBackdropMsg : messages.addFileCostumeMsg;
-        const addSurpriseFunc = target.isStage ? this.handleSurpriseBackdrop : this.handleSurpriseCostume;
-        const addLibraryFunc = target.isStage ? onNewLibraryBackdropClick : onNewLibraryCostumeClick;
-        const addLibraryIcon = target.isStage ? addLibraryBackdropIcon : addLibraryCostumeIcon;
+        const isStage = vm.editingTarget.isStage;
+        const target = vm.editingTarget.sprite;
 
-        const costumeData = (target.costumes || []).map(costume => ({
+        const addLibraryMessage = isStage ? messages.addLibraryBackdropMsg : messages.addLibraryCostumeMsg;
+        const addFileMessage = isStage ? messages.addFileBackdropMsg : messages.addFileCostumeMsg;
+        const addSurpriseFunc = isStage ? this.handleSurpriseBackdrop : this.handleSurpriseCostume;
+        const addLibraryFunc = isStage ? onNewLibraryBackdropClick : onNewLibraryCostumeClick;
+        const addLibraryIcon = isStage ? addLibraryBackdropIcon : addLibraryCostumeIcon;
+
+        const costumeData = target.costumes ? target.costumes.map(costume => ({
             name: costume.name,
             assetId: costume.assetId,
-            details: costume.size ? this.formatCostumeDetails(costume.size) : null
-        }));
-
+            details: costume.size ? this.formatCostumeDetails(costume.size, costume.bitmapResolution) : null,
+            dragPayload: costume
+        })) : [];
         return (
             <AssetPanel
                 buttons={[
@@ -265,12 +290,19 @@ class CostumeTab extends React.Component {
                         title: intl.formatMessage(messages.addBlankCostumeMsg),
                         img: paintIcon,
                         onClick: this.handleNewBlankCostume
+                    },
+                    {
+                        title: intl.formatMessage(addLibraryMessage),
+                        img: searchIcon,
+                        onClick: addLibraryFunc
                     }
                 ]}
+                dragType={DragConstants.COSTUME}
                 items={costumeData}
                 selectedItemIndex={this.state.selectedCostumeIndex}
                 onDeleteClick={target && target.costumes && target.costumes.length > 1 ?
                     this.handleDeleteCostume : null}
+                onDrop={this.handleDrop}
                 onDuplicateClick={this.handleDuplicateCostume}
                 onItemClick={this.handleSelectCostume}
             >
@@ -280,18 +312,6 @@ class CostumeTab extends React.Component {
                     /> :
                     null
                 }
-                {costumeLibraryVisible ? (
-                    <CostumeLibrary
-                        vm={vm}
-                        onRequestClose={onRequestCloseCostumeLibrary}
-                    />
-                ) : null}
-                {backdropLibraryVisible ? (
-                    <BackdropLibrary
-                        vm={vm}
-                        onRequestClose={onRequestCloseBackdropLibrary}
-                    />
-                ) : null}
                 {cameraModalVisible ? (
                     <CameraModal
                         onClose={onRequestCloseCameraModal}
@@ -304,17 +324,14 @@ class CostumeTab extends React.Component {
 }
 
 CostumeTab.propTypes = {
-    backdropLibraryVisible: PropTypes.bool,
     cameraModalVisible: PropTypes.bool,
-    costumeLibraryVisible: PropTypes.bool,
     editingTarget: PropTypes.string,
     intl: intlShape,
+    onActivateSoundsTab: PropTypes.func.isRequired,
     onNewCostumeFromCameraClick: PropTypes.func.isRequired,
     onNewLibraryBackdropClick: PropTypes.func.isRequired,
     onNewLibraryCostumeClick: PropTypes.func.isRequired,
-    onRequestCloseBackdropLibrary: PropTypes.func.isRequired,
     onRequestCloseCameraModal: PropTypes.func.isRequired,
-    onRequestCloseCostumeLibrary: PropTypes.func.isRequired,
     sprites: PropTypes.shape({
         id: PropTypes.shape({
             costumes: PropTypes.arrayOf(PropTypes.shape({
@@ -333,15 +350,15 @@ CostumeTab.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    editingTarget: state.targets.editingTarget,
-    sprites: state.targets.sprites,
-    stage: state.targets.stage,
-    cameraModalVisible: state.modals.cameraCapture,
-    costumeLibraryVisible: state.modals.costumeLibrary,
-    backdropLibraryVisible: state.modals.backdropLibrary
+    editingTarget: state.scratchGui.targets.editingTarget,
+    sprites: state.scratchGui.targets.sprites,
+    stage: state.scratchGui.targets.stage,
+    dragging: state.scratchGui.assetDrag.dragging,
+    cameraModalVisible: state.scratchGui.modals.cameraCapture
 });
 
 const mapDispatchToProps = dispatch => ({
+    onActivateSoundsTab: () => dispatch(activateTab(SOUNDS_TAB_INDEX)),
     onNewLibraryBackdropClick: e => {
         e.preventDefault();
         dispatch(openBackdropLibrary());
@@ -353,18 +370,14 @@ const mapDispatchToProps = dispatch => ({
     onNewCostumeFromCameraClick: () => {
         dispatch(openCameraCapture());
     },
-    onRequestCloseBackdropLibrary: () => {
-        dispatch(closeBackdropLibrary());
-    },
-    onRequestCloseCostumeLibrary: () => {
-        dispatch(closeCostumeLibrary());
-    },
     onRequestCloseCameraModal: () => {
         dispatch(closeCameraCapture());
     }
 });
 
-export default injectIntl(connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CostumeTab));
+export default errorBoundaryHOC('Costume Tab')(
+    injectIntl(connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )(CostumeTab))
+);
