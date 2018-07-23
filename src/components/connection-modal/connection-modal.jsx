@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import keyMirror from 'keymirror';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
 
 import Box from '../box/box.jsx';
 import Modal from '../modal/modal.jsx';
@@ -10,6 +9,7 @@ import ScanningStep from '../../containers/scanning-step.jsx';
 import ConnectingStep from './connecting-step.jsx';
 import ConnectedStep from './connected-step.jsx';
 import ErrorStep from './error-step.jsx';
+import UnavailableStep from './unavailable-step.jsx';
 
 import styles from './connection-modal.css';
 
@@ -17,22 +17,17 @@ const PHASES = keyMirror({
     scanning: null,
     connecting: null,
     connected: null,
-    error: null
-});
-
-const messages = defineMessages({
-    connectionModalLabel: {
-        defaultMessage: 'Scratch Device Connection Modal',
-        description: 'Title for scratch device connection modal',
-        id: 'gui.connectionModal.modalLabel'
-    }
+    error: null,
+    unavailable: null
 });
 
 const ConnectionModalComponent = props => (
     <Modal
         className={styles.modalContent}
-        contentLabel={props.intl.formatMessage(messages.connectionModalLabel)}
+        contentLabel={props.name}
         headerClassName={styles.header}
+        headerImage={props.smallDeviceImage}
+        onHelp={props.onHelp}
         onRequestClose={props.onCancel}
     >
         <Box className={styles.body}>
@@ -40,20 +35,22 @@ const ConnectionModalComponent = props => (
             {props.phase === PHASES.connecting && <ConnectingStep {...props} />}
             {props.phase === PHASES.connected && <ConnectedStep {...props} />}
             {props.phase === PHASES.error && <ErrorStep {...props} />}
+            {props.phase === PHASES.unavailable && <UnavailableStep {...props} />}
         </Box>
     </Modal>
 );
 
 ConnectionModalComponent.propTypes = {
-    intl: intlShape,
+    connectingMessage: PropTypes.node,
+    name: PropTypes.node,
     onCancel: PropTypes.func.isRequired,
+    onHelp: PropTypes.func.isRequired,
     phase: PropTypes.oneOf(Object.keys(PHASES)).isRequired,
+    smallDeviceImage: PropTypes.string,
     title: PropTypes.string.isRequired
 };
 
-const IntlModal = injectIntl(ConnectionModalComponent);
-
 export {
-    IntlModal as default,
+    ConnectionModalComponent as default,
     PHASES
 };
