@@ -81,12 +81,12 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./node_modules/babel-loader/lib/index.js??ref--4!./node_modules/scratch-vm/src/extension-support/extension-worker.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./node_modules/babel-loader/lib/index.js?!./node_modules/scratch-vm/src/extension-support/extension-worker.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/babel-loader/lib/index.js??ref--4!./node_modules/scratch-vm/src/extension-support/extension-worker.js":
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/scratch-vm/src/extension-support/extension-worker.js":
 /*!*******************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4!./node_modules/scratch-vm/src/extension-support/extension-worker.js ***!
   \*******************************************************************************************************************/
@@ -1289,8 +1289,17 @@ var ArgumentType = {
    * String value with text field
    */
   STRING: 'string',
+
+  /**
+   * String value with scratchbit field
+   */
   SCRATCHBIT: 'scratchbit',
-  SCRATCHBIT_ALL: 'scratchbit_all'
+  SCRATCHBIT_ALL: 'scratchbit_all',
+
+  /**
+   * String value with matirx field
+   */
+  MATRIX: 'matrix'
 };
 
 module.exports = ArgumentType;
