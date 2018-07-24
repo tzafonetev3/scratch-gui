@@ -65,7 +65,8 @@ export default [
                 id="gui.extension.scratchbit.description"
             />
         ),
-        featured: true
+        featured: true,
+        launchDeviceConnectionFlow: true
     },
     {
         name: (
